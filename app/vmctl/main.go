@@ -11,7 +11,6 @@ import (
 
 	"github.com/VictoriaMetrics/VictoriaMetrics/app/vmctl/influx"
 	"github.com/VictoriaMetrics/VictoriaMetrics/app/vmctl/opentsdb"
-	"github.com/VictoriaMetrics/VictoriaMetrics/app/vmctl/prometheus"
 	"github.com/VictoriaMetrics/VictoriaMetrics/app/vmctl/vm"
 	"github.com/VictoriaMetrics/VictoriaMetrics/lib/buildinfo"
 	"github.com/urfave/cli/v2"
@@ -95,40 +94,6 @@ func main() {
 					processor := newInfluxProcessor(influxClient, importer,
 						c.Int(influxConcurrency), c.String(influxMeasurementFieldSeparator))
 					return processor.run(c.Bool(globalSilent), c.Bool(globalVerbose))
-				},
-			},
-			{
-				Name:  "prometheus",
-				Usage: "Migrate timeseries from Prometheus",
-				Flags: mergeFlags(globalFlags, promFlags, vmFlags),
-				Action: func(c *cli.Context) error {
-					fmt.Println("Prometheus import mode")
-
-					vmCfg := initConfigVM(c)
-					importer, err = vm.NewImporter(vmCfg)
-					if err != nil {
-						return fmt.Errorf("failed to create VM importer: %s", err)
-					}
-
-					promCfg := prometheus.Config{
-						Snapshot: c.String(promSnapshot),
-						Filter: prometheus.Filter{
-							TimeMin:    c.String(promFilterTimeStart),
-							TimeMax:    c.String(promFilterTimeEnd),
-							Label:      c.String(promFilterLabel),
-							LabelValue: c.String(promFilterLabelValue),
-						},
-					}
-					cl, err := prometheus.NewClient(promCfg)
-					if err != nil {
-						return fmt.Errorf("failed to create prometheus client: %s", err)
-					}
-					pp := prometheusProcessor{
-						cl: cl,
-						im: importer,
-						cc: c.Int(promConcurrency),
-					}
-					return pp.run(c.Bool(globalSilent), c.Bool(globalVerbose))
 				},
 			},
 			{
