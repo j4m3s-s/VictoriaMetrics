@@ -197,7 +197,7 @@ var blockPool = &sync.Pool{
 }
 
 func getUnmarshalWork() *unmarshalWork {
-	v := unmarshalWorkPool.Get()
+	v := UnmarshalWorkPool.Get()
 	if v == nil {
 		return &unmarshalWork{}
 	}
@@ -206,10 +206,10 @@ func getUnmarshalWork() *unmarshalWork {
 
 func putUnmarshalWork(uw *unmarshalWork) {
 	uw.reset()
-	unmarshalWorkPool.Put(uw)
+	UnmarshalWorkPool.Put(uw)
 }
 
-var unmarshalWorkPool sync.Pool
+var UnmarshalWorkPool sync.Pool
 
 func getBufferedReader(r io.Reader) *bufio.Reader {
 	v := bufferedReaderPool.Get()
