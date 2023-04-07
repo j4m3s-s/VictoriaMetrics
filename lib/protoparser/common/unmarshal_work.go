@@ -33,6 +33,7 @@ func StartUnmarshalWorkers() {
 			for uw := range unmarshalWorkCh {
 				uw.Unmarshal()
 			}
+			logger.Infof("Closing worker %v\n", i)
 		}()
 	}
 }
