@@ -3,6 +3,7 @@ package common
 import (
 	"sync"
 
+	"fmt"
 	"github.com/VictoriaMetrics/VictoriaMetrics/lib/logger"
 )
 
@@ -28,13 +29,13 @@ func StartUnmarshalWorkers() {
 	unmarshalWorkCh = make(chan UnmarshalWork, gomaxprocs)
 	unmarshalWorkersWG.Add(gomaxprocs)
 	for i := 0; i < gomaxprocs; i++ {
-		go func() {
+		go func(i int) {
 			defer unmarshalWorkersWG.Done()
 			for uw := range unmarshalWorkCh {
 				uw.Unmarshal()
 			}
-			logger.Infof("Closing worker %v\n", i)
-		}()
+			fmt.Printf("Closing worker %v\n", i)
+		}(i)
 	}
 }
 
